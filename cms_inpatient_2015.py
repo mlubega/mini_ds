@@ -10,6 +10,8 @@ This is a temporary script file.
 import csv as csv 
 import numpy as np
 import pandas as pd
+from sklearn import datasets, linear_model
+from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 UNINSURED_DATA_FILE = 'the-number-of-estimated-eligible-uninsured-people-for-outreach-targeting.csv';
@@ -27,10 +29,40 @@ charges_2014 = charges_2014.drop(not_needed, axis=1);
 
 
 charges = pd.merge(charges_2014, charges_2015, on=['Provider Id', 'DRG Definition', 'Provider State', 'Provider Zip Code', 'Provider City'], suffixes=[2014, 2015])
+## fix issues like this----
+## 003 - ECMO OR TRACH W MV 96+ HRS OR PDX EXC FACE, MOUTH & NECK W MAJ O.R.
+## 003 - ECMO OR TRACH W MV >96 HRS OR PDX EXC FACE, MOUTH & NECK W MAJ O.R.
+
+# total 
+charges_grpd = charges.groupby(['DRG Definition']).agg({'Total Discharges2014':'sum',
+                              'Average Covered Charges2014': 'mean',
+                              'Average Total Payments2014':'mean',
+                              'Average Medicare Payments2014': 'mean',
+                              'Total Discharges2015':'sum',
+                              'Average Covered Charges2015': 'mean',
+                              'Average Total Payments2015':'mean',
+                              'Average Medicare Payments2015': 'mean'});
 
 
+plt.bar(charges_grpd.index, charges_grpd['Average Covered Charges2014'], align='center', alpha=0.5)
+plt.bar(charges_grpd.index, charges_grpd['Average Covered Charges2015'], align='center', alpha=0.5)
+plt.show
 
 
+features = charges.iloc[:,5:11];
+target = charges.iloc[:, 12];
+
+x_train, x_test, y_train, y_test = train_test_split(features, target, test_size=0.2);
+
+lm = linear_model.LinearRegression();
+
+model = lm.fit(x_train, y_train);
+predictions = lm.predict(x_test);
+model.score(x_test, y_test);
+
+plt.scatter(y_test, predictions);
+plt.xlabel('Actual Values');
+plt.ylabel('Predictions');
 
 #charges_2015_grpd = charges_2015.groupby(['DRG Definition']).agg({ 'Total Discharges':'sum', 'Average Covered Charges': 'mean', 'Average Total Payments':'mean','Average Medicare Payments': 'mean' })
 #charges_2014_grpd = charges_2014.groupby(['DRG Definition']).agg({ 'Total Discharges':'sum', 'Average Covered Charges': 'mean', 'Average Total Payments':'mean','Average Medicare Payments': 'mean' })
