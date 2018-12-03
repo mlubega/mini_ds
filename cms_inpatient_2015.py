@@ -1,4 +1,4 @@
-X# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Spyder Editor
 
@@ -16,19 +16,25 @@ UNINSURED_DATA_FILE = 'the-number-of-estimated-eligible-uninsured-people-for-out
 OUTPATIENT_DATA_FILE = '';
 INPATIENT_DATA_FILE_2015 = 'Medicare_Provider_Charge_Inpatient_DRGALL_FY2015.csv';
 INPATIENT_DATA_FILE_2014 = 'Medicare_Provider_Charge_Inpatient_DRGALL_FY2014.csv';
+not_needed = ['Provider Street Address', 'Hospital Referral Region (HRR) Description', 'Provider Name']
 
 charges_2015 = pd.read_csv(INPATIENT_DATA_FILE_2015);
-charges_2015 = charges_2015.sample(frac=0.1);
-mn_charges_2015 = charges_2015[charges_2015['Provider State'] == 'MN'];
-charges_2015['Year'] = 2015;
-charges_2015_grpd = charges_2015.groupby(['DRG Definition']).agg({ 'Total Discharges':'sum', 'Average Covered Charges': 'mean', 'Average Total Payments':'mean','Average Medicare Payments': 'mean' })
+charges_2015 = charges_2015.drop(not_needed, axis=1);
 
 
 charges_2014 = pd.read_csv(INPATIENT_DATA_FILE_2014);
-charges_2014 = charges_2014.sample(frac=0.1);
-mn_charges_2014 = charges_2014[charges_2014['Provider State'] == 'MN'];
-charges_2014['Year'] = 2014;
-charges_2014_grpd = charges_2014.groupby(['DRG Definition']).agg({ 'Total Discharges':'sum', 'Average Covered Charges': 'mean', 'Average Total Payments':'mean','Average Medicare Payments': 'mean' })
+charges_2014 = charges_2014.drop(not_needed, axis=1);
+
+
+charges = pd.merge(charges_2014, charges_2015, on=['Provider Id', 'DRG Definition', 'Provider State', 'Provider Zip Code', 'Provider City'], suffixes=[2014, 2015])
+
+
+
+
+
+#charges_2015_grpd = charges_2015.groupby(['DRG Definition']).agg({ 'Total Discharges':'sum', 'Average Covered Charges': 'mean', 'Average Total Payments':'mean','Average Medicare Payments': 'mean' })
+#charges_2014_grpd = charges_2014.groupby(['DRG Definition']).agg({ 'Total Discharges':'sum', 'Average Covered Charges': 'mean', 'Average Total Payments':'mean','Average Medicare Payments': 'mean' })
+
 
 #plt.bar(charges_2014_grpd.index, charges_2014_grpd['Average Covered Charges'], align='center', alpha=0.5)
 #plt.bar(charges_2015_grpd.index, charges_2015_grpd['Average Covered Charges'], align='center', alpha=0.5)
