@@ -1,0 +1,33 @@
+# -*- coding: utf-8 -*-
+"""
+Spyder Editor
+
+This is a temporary script file.
+"""
+
+
+# Some usual imports here
+import csv as csv 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+UNINSURED_DATA_FILE = 'the-number-of-estimated-eligible-uninsured-people-for-outreach-targeting.csv';
+OUTPATIENT_DATA_FILE = '';
+INPATIENT_DATA_FILE = 'Medicare_Provider_Charge_Inpatient_DRGALL_FY2015.csv';
+
+inpatient_charges = pd.read_csv(INPATIENT_DATA_FILE);
+
+inpatient_charges.columns
+
+inpatient_charges.describe()
+treatments = inpatient_charges.groupby(['DRG Definition']).groups.keys()
+charges_grouped = inpatient_charges.groupby(['DRG Definition']).agg({ 'Total Discharges':'mean', 'Average Covered Charges': 'mean', 'Average Total Payments':'mean','Average Medicare Payments': 'mean' })
+charges_grouped.columns
+plt.bar(charges_grouped.index, charges_grouped['Average Covered Charges'], align='center', alpha=0.5)
+plt.show()
+
+plt.bar(charges_grouped.index, charges_grouped['Average Total Payments'], align='center', alpha=0.5)
+plt.show()
+
+az_inpatient_charges = inpatient_charges.loc(inpatient_charges['Provider State'] == 'AZ')
