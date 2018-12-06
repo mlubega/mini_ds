@@ -36,9 +36,9 @@ uninsured_data[int_cols] = uninsured_data[int_cols].apply(lambda x: pd.to_numeri
 
 
 #stats (mean, std, max, min, quartiles) of dataset
-uninsured_stats = uninsured_data.describe()
-print(uninsured_stats)
+#uninsured_stats = uninsured_data.describe()
+#print(uninsured_stats)
 
-
+grpd = uninsured_data.groupby(['StateName']);
 
 

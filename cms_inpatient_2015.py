@@ -22,10 +22,11 @@ not_needed = ['Provider Street Address', 'Hospital Referral Region (HRR) Descrip
 
 charges_2015 = pd.read_csv(INPATIENT_DATA_FILE_2015);
 charges_2015 = charges_2015.drop(not_needed, axis=1);
-
+charges_2015 = charges_2015[charges_2015['Provider State'] == 'MN'];
 
 charges_2014 = pd.read_csv(INPATIENT_DATA_FILE_2014);
 charges_2014 = charges_2014.drop(not_needed, axis=1);
+charges_2014 = charges_2014[charges_2014['Provider State'] == 'MN'];
 
 
 charges = pd.merge(charges_2014, charges_2015, on=['Provider Id', 'DRG Definition', 'Provider State', 'Provider Zip Code', 'Provider City'], suffixes=[2014, 2015])
@@ -58,7 +59,7 @@ lm = linear_model.LinearRegression();
 
 model = lm.fit(x_train, y_train);
 predictions = lm.predict(x_test);
-model.score(x_test, y_test);
+score = model.score(x_test, y_test);
 
 plt.scatter(y_test, predictions);
 plt.xlabel('Actual Values');
